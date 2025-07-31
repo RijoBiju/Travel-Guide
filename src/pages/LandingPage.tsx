@@ -15,24 +15,6 @@ const LandingPage = () => {
           {/* Feature cards - centered */}
           <div className="relative max-w-xl mx-auto">
             <FeatureSearch></FeatureSearch>
-            {/* Place this directly under your FeatureSearch or input */}
-            <ul className="absolute w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg overflow-auto max-h-60 z-50">
-              <li className="cursor-pointer px-4 py-2 text-gray-700 hover:bg-gray-100">
-                Paris, France
-              </li>
-              <li className="cursor-pointer px-4 py-2 text-gray-700 hover:bg-gray-100">
-                New York, USA
-              </li>
-              <li className="cursor-pointer px-4 py-2 text-gray-700 hover:bg-gray-100">
-                Tokyo, Japan
-              </li>
-              <li className="cursor-pointer px-4 py-2 text-gray-700 hover:bg-gray-100">
-                Sydney, Australia
-              </li>
-              <li className="cursor-pointer px-4 py-2 text-gray-700 hover:bg-gray-100">
-                Cape Town, South Africa
-              </li>
-            </ul>
           </div>
 
           {/* Bottom decoration */}
