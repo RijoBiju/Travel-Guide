@@ -47,9 +47,7 @@ const SignInForm = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <div htmlFor="email" className="sr-only">
-                    Email
-                  </div>
+                  <div className="sr-only">Email</div>
                   <div className="relative">
                     <input
                       id="email"

@@ -2,23 +2,33 @@
 import { signIn } from "next-auth/react";
 import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-const SignInForm = () => {
+const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  const router = useRouter();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await signIn("credentials", {
-      email,
-      password,
-      mode: "signup",
-      redirect: false,
+    setError(null);
+
+    const res = await fetch("/api/signup", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+      headers: { "Content-Type": "application/json" },
     });
-    if (res?.error) setError("Invalid email or password");
-    else window.location.href = "/";
+
+    if (!res.ok) {
+      const { error } = await res.json();
+      setError(error || "Signup failed");
+      return;
+    }
+
+    router.push("/auth/confirm-email");
   };
 
   return (
@@ -47,9 +57,7 @@ const SignInForm = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <div htmlFor="email" className="sr-only">
-                    Email
-                  </div>
+                  <div className="sr-only">Email</div>
                   <div className="relative">
                     <input
                       id="email"
@@ -170,4 +178,4 @@ const SignInForm = () => {
   );
 };
 
-export default SignInForm;
+export default SignUpForm;
