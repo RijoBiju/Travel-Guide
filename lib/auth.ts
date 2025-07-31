@@ -1,12 +1,15 @@
 // lib/auth.ts
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-// Optional: import zod to validate form data
-import { signInSchema } from "@/lib/zod";
-import { verifyUser } from "@/lib/db"; // your logic to verify user
+import { signInSchema } from "./zod";
 
-export const authOptions: NextAuthOptions = {
+export const authOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -14,15 +17,9 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        try {
-          const { email, password } = await signInSchema.parseAsync(
-            credentials
-          );
-          const user = await verifyUser(email, password);
-          return user || null;
-        } catch {
-          return null;
-        }
+        // Implement your user verification logic here
+        const user = await verifyUser(credentials.email, credentials.password);
+        return user || null;
       },
     }),
   ],
@@ -32,8 +29,10 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async session({ session, token }) {
-      session.user = { ...session.user, id: token.sub };
+      session.user.id = token.sub;
       return session;
     },
   },
 };
+
+export default NextAuth(authOptions);
