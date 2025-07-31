@@ -1,6 +1,6 @@
-import Hero from "../components/Hero";
-import FeatureSearch from "../components/FeatureCard";
-import AuthenticationButtons from "../components/AuthenticationButtons";
+import Hero from "@/components/Hero";
+import FeatureSearch from "@/components/FeatureCard";
+import AuthenticationButtons from "@/components/AuthenticationButtons";
 
 const LandingPage = () => {
   return (
