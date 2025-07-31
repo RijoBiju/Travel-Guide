@@ -1,9 +1,11 @@
 import Hero from "../components/Hero";
 import FeatureSearch from "../components/FeatureCard";
+import AuthenticationButtons from "../components/AuthenticationButtons";
 
 const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <AuthenticationButtons></AuthenticationButtons>
       {/* Main content */}
       <div className="relative z-10 container mx-auto px-6 py-12">
         <div className="max-w-6xl mx-auto">
