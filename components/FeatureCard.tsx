@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import SearchIcon from "@/public/search-icon.png";
+import SearchIcon from "../public/search-icon.png";
 
 type FeatureSearchProps = {
   onSearch?: (query: string) => void;

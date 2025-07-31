@@ -1,14 +1,13 @@
-// lib/auth.ts
-import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { signInSchema } from "./zod";
+import { verifyUser } from "./db";
 
 export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -17,22 +16,22 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // Implement your user verification logic here
-        const user = await verifyUser(credentials.email, credentials.password);
-        return user || null;
+        const result = signInSchema.safeParse(credentials);
+        if (!result.success) return null;
+        const user = await verifyUser(result.data.email, result.data.password);
+        console.log("success");
+        return user;
       },
     }),
   ],
   session: {
     strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET!,
   callbacks: {
     async session({ session, token }) {
-      session.user.id = token.sub;
+      if (session.user) session.user.id = token.sub;
       return session;
     },
   },
 };
-
-export default NextAuth(authOptions);

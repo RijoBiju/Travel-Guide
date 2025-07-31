@@ -14,7 +14,7 @@ const SignInForm = () => {
     const res = await signIn("credentials", {
       email,
       password,
-      mode: "signin",
+      mode: "signup",
       redirect: false,
     });
     if (res?.error) setError("Invalid email or password");
@@ -33,7 +33,7 @@ const SignInForm = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-semibold text-foreground">
-                  Sign in with email
+                  Sign up with email
                 </h1>
                 <p className="text-sm text-muted-foreground mt-2">
                   Make a new doc to bring your words, data,
@@ -117,12 +117,6 @@ const SignInForm = () => {
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <button className="text-sm text-muted-foreground hover:text-foreground">
-                    Forgot password?
-                  </button>
-                </div>
-
                 <button className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium bg-black text-white rounded-xl">
                   Get Started
                 </button>
@@ -137,7 +131,7 @@ const SignInForm = () => {
                 </div>
                 <div className="relative flex justify-center text-sm">
                   <span className="px-4 bg-card text-muted-foreground bg-white">
-                    Or sign in with
+                    Or sign up with
                   </span>
                 </div>
               </div>
@@ -165,7 +159,7 @@ const SignInForm = () => {
                   />
                 </svg>
                 <span className="text-sm font-medium text-foreground">
-                  Sign in with Google
+                  Sign up with Google
                 </span>
               </button>
             </div>
