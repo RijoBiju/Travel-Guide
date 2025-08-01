@@ -1,5 +1,4 @@
 import "leaflet/dist/leaflet.css";
-
 import {
   MapContainer,
   TileLayer,
@@ -11,11 +10,29 @@ import {
 import L from "leaflet";
 import { useEffect, useState, useRef } from "react";
 
-const FlyToCountry = ({ country }: { country: string }) => {
+interface MarkerType {
+  lat: number;
+  lon: number;
+  name: string;
+}
+
+interface MapProps {
+  countryToZoom: string;
+  markers: MarkerType[];
+  searchCenter: MarkerType | null;
+}
+
+const FlyToCountry = ({
+  country,
+  disableFly,
+}: {
+  country: string;
+  disableFly: boolean;
+}) => {
   const map = useMap();
 
   useEffect(() => {
-    if (!country) return;
+    if (!country || disableFly) return;
 
     const fetchCoords = async () => {
       const res = await fetch(
@@ -44,27 +61,35 @@ const FlyToCountry = ({ country }: { country: string }) => {
     };
 
     fetchCoords();
-  }, [country, map]);
+  }, [country, disableFly, map]);
 
   return null;
 };
 
-const UserInteractionHandler = ({
-  onUserInteraction,
-}: {
-  onUserInteraction: () => void;
-}) => {
+const FlyToLocation = ({ center }: { center: MarkerType | null }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (center) {
+      map.flyTo([center.lat, center.lon], 13, { duration: 1.5 });
+    }
+  }, [center, map]);
+
+  return null;
+};
+
+const UserInteractionHandler = ({ onInteract }: { onInteract: () => void }) => {
   const interactedRef = useRef(false);
   useMapEvents({
     dragstart() {
       if (!interactedRef.current) {
-        onUserInteraction();
+        onInteract();
         interactedRef.current = true;
       }
     },
     zoomstart() {
       if (!interactedRef.current) {
-        onUserInteraction();
+        onInteract();
         interactedRef.current = true;
       }
     },
@@ -72,73 +97,41 @@ const UserInteractionHandler = ({
   return null;
 };
 
-interface MarkerType {
-  lat: number;
-  lon: number;
-  name: string;
-}
-
-interface MapProps {
-  countryToZoom: string;
-  markers: MarkerType[];
-}
-
-const FitBoundsToMarkers = ({
+// New component inside MapContainer that handles panning/zooming markers
+const MarkersViewController = ({
   markers,
-  onUserInteraction,
-  disableAutoFit,
+  userInteracted,
 }: {
   markers: MarkerType[];
-  onUserInteraction: () => void;
-  disableAutoFit: boolean;
+  userInteracted: boolean;
 }) => {
   const map = useMap();
-  const prevMarkersRef = useRef<MarkerType[]>([]);
 
   useEffect(() => {
-    // If markers changed, reset user interaction flag by calling a prop function
-    const prevMarkers = prevMarkersRef.current;
+    if (userInteracted) return;
+    if (markers.length === 0) return;
 
-    const markersChanged =
-      prevMarkers.length !== markers.length ||
-      markers.some(
-        (m, i) => m.lat !== prevMarkers[i]?.lat || m.lon !== prevMarkers[i]?.lon
+    if (markers.length === 1) {
+      const m = markers[0];
+      map.flyTo([m.lat, m.lon], 13, { duration: 1.5 });
+    } else {
+      const bounds = L.latLngBounds(
+        markers.map((m) => [m.lat, m.lon] as [number, number])
       );
-
-    if (markersChanged) {
-      onUserInteraction(); // Reset interaction flag to false, explained below
-      prevMarkersRef.current = markers;
+      map.flyToBounds(bounds, { padding: [50, 50], duration: 1.5 });
     }
-  }, [markers, onUserInteraction]);
+  }, [markers, map, userInteracted]);
 
-  useEffect(() => {
-    if (!markers.length) return;
-    if (disableAutoFit) return;
-
-    const latLngs = markers.map((m) => [m.lat, m.lon] as [number, number]);
-    const bounds = L.latLngBounds(latLngs);
-
-    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
-  }, [markers, map, disableAutoFit]);
-
-  return <UserInteractionHandler onUserInteraction={onUserInteraction} />;
+  return null;
 };
 
-const Map = ({ countryToZoom, markers }: MapProps) => {
+const Map = ({ countryToZoom, markers, searchCenter }: MapProps) => {
   const [userInteracted, setUserInteracted] = useState(false);
 
-  // To reset the userInteracted flag on markers change, define this function:
-  const handleUserInteraction = () => {
-    setUserInteracted(true);
-  };
-
-  // A small trick:
-  // We want to reset `userInteracted` to false when markers change (new markers added or removed)
-  // So we'll watch markers with a useEffect and reset flag there
+  // Reset interaction when markers or countryToZoom change
   useEffect(() => {
-    // When markers change, reset userInteracted to false so map auto-fits again
     setUserInteracted(false);
-  }, [markers]);
+  }, [markers, countryToZoom]);
 
   return (
     <div className="w-full h-full relative">
@@ -151,6 +144,16 @@ const Map = ({ countryToZoom, markers }: MapProps) => {
         <TileLayer
           attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        <UserInteractionHandler onInteract={() => setUserInteracted(true)} />
+        <FlyToCountry country={countryToZoom} disableFly={userInteracted} />
+        <FlyToLocation
+          center={searchCenter && !userInteracted ? searchCenter : null}
+        />
+        <MarkersViewController
+          markers={markers}
+          userInteracted={userInteracted}
         />
 
         {markers.map((m, i) => (

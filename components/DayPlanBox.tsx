@@ -17,27 +17,12 @@ type DayPlanBoxProps = {
   setMarkers: React.Dispatch<React.SetStateAction<MarkerType[]>>;
 };
 
-const initialDayItems = [
-  {
-    id: 1,
-    time: "9:00 AM",
-    activity: "Visit Acropolis Museum",
-    location: "Athens, Greece",
-  },
-  {
-    id: 2,
-    time: "12:00 PM",
-    activity: "Lunch at Traditional Taverna",
-    location: "Plaka District",
-  },
-];
-
 const DayPlanBox = ({
   dayTitle = "Day",
   markers = [],
   setMarkers,
 }: DayPlanBoxProps) => {
-  const [dayItems, setDayItems] = useState(initialDayItems);
+  const [dayItems, setDayItems] = useState([]);
   const [localMarkers, setLocalMarkers] = useState<MarkerType[]>(markers);
 
   const [isEditing, setIsEditing] = useState(false);
