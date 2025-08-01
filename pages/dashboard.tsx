@@ -56,7 +56,7 @@ export default function Index() {
           <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
             <div className="p-6 pt-0 space-y-6">
               <SuggestionsBox />
-              <DayPlanBox />
+              <DayPlanBox setMarkers={setMarkers} />
               <AddDayButton />
             </div>
           </div>

@@ -4,35 +4,19 @@ import Image from "next/image";
 import baliImg from "../public/bali.jpg";
 import AddActivityModal from "./AddActivityModal"; // Adjust path if needed
 
-const initialDayItems = [
-  {
-    id: 1,
-    time: "9:00 AM",
-    activity: "Visit Acropolis Museum",
-    location: "Athens, Greece",
-  },
-  {
-    id: 2,
-    time: "12:00 PM",
-    activity: "Lunch at Traditional Taverna",
-    location: "Plaka District",
-  },
-  {
-    id: 3,
-    time: "3:00 PM",
-    activity: "Explore Ancient Agora",
-    location: "Athens, Greece",
-  },
-  {
-    id: 4,
-    time: "6:00 PM",
-    activity: "Sunset at Mount Lycabettus",
-    location: "Athens, Greece",
-  },
-];
+type MarkerType = {
+  id: number;
+  lat: number;
+  lon: number;
+  name: string;
+};
 
-const DayPlanBox = () => {
-  const [dayItems, setDayItems] = useState(initialDayItems);
+type DayPlanBoxProps = {
+  setMarkers: React.Dispatch<React.SetStateAction<MarkerType[]>>;
+};
+
+const DayPlanBox = ({ setMarkers }: DayPlanBoxProps) => {
+  const [dayItems, setDayItems] = useState([]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [dayTitle, setDayTitle] = useState("Day 1");
@@ -47,31 +31,37 @@ const DayPlanBox = () => {
     if (e.key === "Enter") setIsEditing(false);
   };
 
+  // Delete day item and its marker by id
   const handleDelete = (id: number) => {
     setDayItems((prev) => prev.filter((item) => item.id !== id));
+    setMarkers((prev) => prev.filter((marker) => marker.id !== id));
   };
 
-  // When modal saves new activity
+  // When modal saves new activity, add day item and marker with same id
   const handleSaveNewActivity = (
     activity: string,
     place: string,
-    _coords: { lat: number; lon: number },
-    _imageUrl: string
+    coords: { lat: number; lon: number }
   ) => {
     const newId = dayItems.length
       ? Math.max(...dayItems.map((i) => i.id)) + 1
       : 1;
-    const time = "TBD"; // You might want to add time input in modal later
-
+    const time = "TBD";
     setDayItems((prev) => [
+      ...prev,
+      { id: newId, time, activity, location: place },
+    ]);
+
+    setMarkers((prev) => [
       ...prev,
       {
         id: newId,
-        time,
-        activity,
-        location: place,
+        lat: coords.lat,
+        lon: coords.lon,
+        name: `${activity} @ ${place}`,
       },
     ]);
+
     setModalOpen(false);
   };
 

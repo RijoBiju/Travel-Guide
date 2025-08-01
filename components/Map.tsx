@@ -53,6 +53,21 @@ interface MapProps {
   markers: MarkerType[];
 }
 
+const FitBoundsToMarkers = ({ markers }: { markers: MarkerType[] }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!markers.length) return;
+
+    const latLngs = markers.map((m) => [m.lat, m.lon] as [number, number]);
+    const bounds = L.latLngBounds(latLngs);
+
+    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+  }, [markers, map]);
+
+  return null;
+};
+
 const Map = ({ countryToZoom, markers }: MapProps) => {
   return (
     <div className="w-full h-full relative">
@@ -67,7 +82,11 @@ const Map = ({ countryToZoom, markers }: MapProps) => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <FlyToCountry country={countryToZoom} />
+        {markers.length > 0 ? (
+          <FitBoundsToMarkers markers={markers} />
+        ) : (
+          <FlyToCountry country={countryToZoom} />
+        )}
 
         {markers.map((m, i) => (
           <Marker
