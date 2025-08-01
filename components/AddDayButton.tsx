@@ -1,8 +1,13 @@
 import { Plus } from "lucide-react";
 
-const AddDayButton = () => {
+type AddDayButtonProps = {
+  onClick: () => void;
+};
+
+const AddDayButton = ({ onClick }: AddDayButtonProps) => {
   return (
     <button
+      onClick={onClick}
       className="
       relative
       w-full h-14 rounded border-2 border-dashed border-gray-300

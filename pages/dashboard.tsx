@@ -9,36 +9,49 @@ import AddDayButton from "@/components/AddDayButton";
 
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
+type MarkerType = {
+  lat: number;
+  lon: number;
+  name: string;
+};
+
+type DayPlan = {
+  id: number;
+  title: string;
+  markers: MarkerType[];
+};
+
 export default function Index() {
   const [search, setSearch] = useState("");
   const [countryToZoom, setCountryToZoom] = useState("");
-  const [markers, setMarkers] = useState<
-    { lat: number; lon: number; name: string }[]
-  >([]);
 
-  // Add marker by searching place (used only for pins, NOT for zoom)
-  const addMarker = async (place: string) => {
-    if (!place) return;
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-        place
-      )}`
-    );
-    const data = await res.json();
-    if (data && data[0]) {
-      const { lat, lon, display_name } = data[0];
-      setMarkers((prev) => [
-        ...prev,
-        { lat: +lat, lon: +lon, name: display_name },
-      ]);
-    }
+  // Combine days and dayPlans into one state for simplicity
+  const [dayPlans, setDayPlans] = useState<DayPlan[]>([
+    { id: 1, title: "Day 1", markers: [] },
+  ]);
+
+  // Add new day plan (with empty markers)
+  const addDayPlan = () => {
+    setDayPlans((prev) => {
+      const newId = prev.length ? prev[prev.length - 1].id + 1 : 1;
+      return [...prev, { id: newId, title: `Day ${newId}`, markers: [] }];
+    });
   };
+
+  // Update markers for a specific day plan
+  const updateMarkers = (id: number, newMarkers: MarkerType[]) => {
+    setDayPlans((prev) =>
+      prev.map((dp) => (dp.id === id ? { ...dp, markers: newMarkers } : dp))
+    );
+  };
+
+  // Combine all markers from all day plans to pass to Map
+  const combinedMarkers = dayPlans.flatMap((dp) => dp.markers);
 
   // On search submit, zoom to country only (DO NOT add marker here)
   const onSearch = () => {
     if (!search) return;
     setCountryToZoom(search);
-    // Do NOT call addMarker(search) here anymore
   };
 
   return (
@@ -47,7 +60,7 @@ export default function Index() {
 
       <div className="flex h-[calc(100vh-4rem)]">
         <div className="flex-[3] relative">
-          <Map countryToZoom={countryToZoom} markers={markers} />
+          <Map countryToZoom={countryToZoom} markers={combinedMarkers} />
         </div>
 
         <div className="w-96 flex flex-col h-full overflow-hidden border-l border-border">
@@ -56,8 +69,15 @@ export default function Index() {
           <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
             <div className="p-6 pt-0 space-y-6">
               <SuggestionsBox />
-              <DayPlanBox setMarkers={setMarkers} />
-              <AddDayButton />
+              {dayPlans.map((dayPlan) => (
+                <DayPlanBox
+                  key={dayPlan.id}
+                  dayTitle={dayPlan.title}
+                  markers={dayPlan.markers}
+                  setMarkers={(markers) => updateMarkers(dayPlan.id, markers)}
+                />
+              ))}
+              <AddDayButton onClick={addDayPlan} />
             </div>
           </div>
         </div>

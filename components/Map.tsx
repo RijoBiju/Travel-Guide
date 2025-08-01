@@ -1,8 +1,15 @@
 import "leaflet/dist/leaflet.css";
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 import L from "leaflet";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const FlyToCountry = ({ country }: { country: string }) => {
   const map = useMap();
@@ -29,7 +36,7 @@ const FlyToCountry = ({ country }: { country: string }) => {
             parseFloat(boundingbox[3]),
           ];
           const bounds = L.latLngBounds(southWest, northEast);
-          map.flyToBounds(bounds, { duration: 2 }); // 2 seconds animation
+          map.flyToBounds(bounds, { duration: 2 });
         } else {
           map.flyTo([+lat, +lon], 6, { duration: 2 });
         }
@@ -39,6 +46,29 @@ const FlyToCountry = ({ country }: { country: string }) => {
     fetchCoords();
   }, [country, map]);
 
+  return null;
+};
+
+const UserInteractionHandler = ({
+  onUserInteraction,
+}: {
+  onUserInteraction: () => void;
+}) => {
+  const interactedRef = useRef(false);
+  useMapEvents({
+    dragstart() {
+      if (!interactedRef.current) {
+        onUserInteraction();
+        interactedRef.current = true;
+      }
+    },
+    zoomstart() {
+      if (!interactedRef.current) {
+        onUserInteraction();
+        interactedRef.current = true;
+      }
+    },
+  });
   return null;
 };
 
@@ -53,22 +83,63 @@ interface MapProps {
   markers: MarkerType[];
 }
 
-const FitBoundsToMarkers = ({ markers }: { markers: MarkerType[] }) => {
+const FitBoundsToMarkers = ({
+  markers,
+  onUserInteraction,
+  disableAutoFit,
+}: {
+  markers: MarkerType[];
+  onUserInteraction: () => void;
+  disableAutoFit: boolean;
+}) => {
   const map = useMap();
+  const prevMarkersRef = useRef<MarkerType[]>([]);
+
+  useEffect(() => {
+    // If markers changed, reset user interaction flag by calling a prop function
+    const prevMarkers = prevMarkersRef.current;
+
+    const markersChanged =
+      prevMarkers.length !== markers.length ||
+      markers.some(
+        (m, i) => m.lat !== prevMarkers[i]?.lat || m.lon !== prevMarkers[i]?.lon
+      );
+
+    if (markersChanged) {
+      onUserInteraction(); // Reset interaction flag to false, explained below
+      prevMarkersRef.current = markers;
+    }
+  }, [markers, onUserInteraction]);
 
   useEffect(() => {
     if (!markers.length) return;
+    if (disableAutoFit) return;
 
     const latLngs = markers.map((m) => [m.lat, m.lon] as [number, number]);
     const bounds = L.latLngBounds(latLngs);
 
     map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
-  }, [markers, map]);
+  }, [markers, map, disableAutoFit]);
 
-  return null;
+  return <UserInteractionHandler onUserInteraction={onUserInteraction} />;
 };
 
 const Map = ({ countryToZoom, markers }: MapProps) => {
+  const [userInteracted, setUserInteracted] = useState(false);
+
+  // To reset the userInteracted flag on markers change, define this function:
+  const handleUserInteraction = () => {
+    setUserInteracted(true);
+  };
+
+  // A small trick:
+  // We want to reset `userInteracted` to false when markers change (new markers added or removed)
+  // So we'll watch markers with a useEffect and reset flag there
+  useEffect(() => {
+    // When markers change, reset userInteracted to false so map auto-fits again
+    setUserInteracted(false);
+  }, [markers]);
+
   return (
     <div className="w-full h-full relative">
       <MapContainer
@@ -81,12 +152,6 @@ const Map = ({ countryToZoom, markers }: MapProps) => {
           attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
-        {markers.length > 0 ? (
-          <FitBoundsToMarkers markers={markers} />
-        ) : (
-          <FlyToCountry country={countryToZoom} />
-        )}
 
         {markers.map((m, i) => (
           <Marker

@@ -1,43 +1,74 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Edit2, Plus, X } from "lucide-react";
 import Image from "next/image";
 import baliImg from "../public/bali.jpg";
-import AddActivityModal from "./AddActivityModal"; // Adjust path if needed
+import AddActivityModal from "./AddActivityModal";
 
 type MarkerType = {
-  id: number;
+  id: number; // new field to associate marker with activity id
   lat: number;
   lon: number;
   name: string;
 };
 
 type DayPlanBoxProps = {
+  dayTitle?: string;
+  markers?: MarkerType[];
   setMarkers: React.Dispatch<React.SetStateAction<MarkerType[]>>;
 };
 
-const DayPlanBox = ({ setMarkers }: DayPlanBoxProps) => {
-  const [dayItems, setDayItems] = useState([]);
+const initialDayItems = [
+  {
+    id: 1,
+    time: "9:00 AM",
+    activity: "Visit Acropolis Museum",
+    location: "Athens, Greece",
+  },
+  {
+    id: 2,
+    time: "12:00 PM",
+    activity: "Lunch at Traditional Taverna",
+    location: "Plaka District",
+  },
+];
+
+const DayPlanBox = ({
+  dayTitle = "Day",
+  markers = [],
+  setMarkers,
+}: DayPlanBoxProps) => {
+  const [dayItems, setDayItems] = useState(initialDayItems);
+  const [localMarkers, setLocalMarkers] = useState<MarkerType[]>(markers);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [dayTitle, setDayTitle] = useState("Day 1");
+  const [title, setTitle] = useState(dayTitle);
 
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Initialize local markers from prop on mount or markers change
+  useEffect(() => {
+    setLocalMarkers(markers);
+  }, [markers]);
+
+  // Sync local markers up to parent on change
+  useEffect(() => {
+    setMarkers(localMarkers);
+  }, [localMarkers, setMarkers]);
+
   const handleEditClick = () => setIsEditing(true);
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setDayTitle(e.target.value);
+    setTitle(e.target.value);
   const handleBlur = () => setIsEditing(false);
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") setIsEditing(false);
   };
 
-  // Delete day item and its marker by id
   const handleDelete = (id: number) => {
     setDayItems((prev) => prev.filter((item) => item.id !== id));
-    setMarkers((prev) => prev.filter((marker) => marker.id !== id));
+    setLocalMarkers((prev) => prev.filter((marker) => marker.id !== id));
   };
 
-  // When modal saves new activity, add day item and marker with same id
+  // When modal saves new activity
   const handleSaveNewActivity = (
     activity: string,
     place: string,
@@ -47,12 +78,13 @@ const DayPlanBox = ({ setMarkers }: DayPlanBoxProps) => {
       ? Math.max(...dayItems.map((i) => i.id)) + 1
       : 1;
     const time = "TBD";
+
     setDayItems((prev) => [
       ...prev,
       { id: newId, time, activity, location: place },
     ]);
 
-    setMarkers((prev) => [
+    setLocalMarkers((prev) => [
       ...prev,
       {
         id: newId,
@@ -73,7 +105,7 @@ const DayPlanBox = ({ setMarkers }: DayPlanBoxProps) => {
             {isEditing ? (
               <input
                 type="text"
-                value={dayTitle}
+                value={title}
                 onChange={handleTitleChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
@@ -82,7 +114,7 @@ const DayPlanBox = ({ setMarkers }: DayPlanBoxProps) => {
               />
             ) : (
               <h3 className="font-semibold text-foreground cursor-text">
-                {dayTitle}
+                {title}
               </h3>
             )}
             <button
@@ -109,7 +141,7 @@ const DayPlanBox = ({ setMarkers }: DayPlanBoxProps) => {
               >
                 <Image
                   src={baliImg}
-                  alt="IDK"
+                  alt="Activity"
                   width={64}
                   height={64}
                   className="rounded-md object-cover w-16 h-16 flex-shrink-0"
@@ -134,7 +166,6 @@ const DayPlanBox = ({ setMarkers }: DayPlanBoxProps) => {
         </div>
       </div>
 
-      {/* Modal */}
       <AddActivityModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
