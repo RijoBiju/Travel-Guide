@@ -2,43 +2,25 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogIn } from "lucide-react";
+import { supabaseClient } from "@/lib/supabaseClient";
 
 const ConfirmEmailPage = () => {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [confirmed, setConfirmed] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    // Get the fragment string after #
-    const hash = window.location.hash;
-    if (!hash) {
-      setError("No access token found");
+    const checkSession = async () => {
+      const { data } = await supabaseClient.auth.getSession();
+      if (data.session) {
+        setConfirmed(true);
+        setTimeout(() => router.push("/dashboard"), 3000);
+      }
       setLoading(false);
-      return;
-    }
+    };
 
-    // Parse the hash parameters
-    const params = new URLSearchParams(hash.substring(1)); // remove #
-    const accessToken = params.get("access_token");
-
-    if (!accessToken) {
-      setError("Access token missing");
-      setLoading(false);
-      return;
-    }
-
-    // TODO: Use the accessToken to verify the user, e.g. call your backend to confirm signup
-
-    // For example:
-    // fetch("/api/confirm", { method: "POST", headers: { Authorization: `Bearer ${accessToken}` } })
-
-    // For now, just simulate success:
-    setLoading(false);
-    // Redirect after confirmation if you want:
-    // router.push("/dashboard");
-  }, [router]);
-
-  if (error) return <p className="text-red-500">{error}</p>;
+    checkSession();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
@@ -55,9 +37,13 @@ const ConfirmEmailPage = () => {
                   <h1 className="text-2xl font-semibold text-foreground">
                     Confirming your email...
                   </h1>
-                ) : (
+                ) : confirmed ? (
                   <h1 className="text-2xl font-semibold text-foreground">
                     Email Confirmed!
+                  </h1>
+                ) : (
+                  <h1 className="text-2xl font-semibold text-foreground text-red-500">
+                    Something went wrong.
                   </h1>
                 )}
               </div>

@@ -1,20 +1,20 @@
 "use client";
-import { signIn } from "next-auth/react";
 import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signUpWithGoogle } from "../../lib/signupGoogle";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    // setError(null);
 
     const res = await fetch("/api/signup", {
       method: "POST",
@@ -23,8 +23,8 @@ const SignUpForm = () => {
     });
 
     if (!res.ok) {
-      const { error } = await res.json();
-      setError(error || "Signup failed");
+      // const { error } = await res.json();
+      // setError(error || "Signup failed");
       return;
     }
 
@@ -145,7 +145,7 @@ const SignUpForm = () => {
               </div>
 
               <button
-                onClick={() => signIn("google", { callbackUrl: "/" })}
+                onClick={signUpWithGoogle}
                 className="border-2 w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-full transition-colors"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">

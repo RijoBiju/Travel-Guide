@@ -2,7 +2,6 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { signInSchema } from "./zod";
 import { verifyUser } from "./db";
-import { NextApiRequest, NextApiResponse } from "next";
 
 // Validate env variables
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {

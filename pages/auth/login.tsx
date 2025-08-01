@@ -1,24 +1,33 @@
 "use client";
-import { signIn } from "next-auth/react";
 import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { signInWithGoogle } from "../../lib/signInGoogle";
 
 const SignInForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await signIn("credentials", {
-      email,
-      password,
-      mode: "signin",
-      redirect: false,
+
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
     });
-    if (res?.error) setError("Invalid email or password");
-    else window.location.href = "/";
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      // Handle login error
+      console.error(data.error);
+      // setError(data.error); // if you want to show error in UI
+    } else {
+      // Login successful
+      window.location.href = "/dashboard"; // or wherever you want to redirect
+    }
   };
 
   return (
@@ -141,7 +150,7 @@ const SignInForm = () => {
               </div>
 
               <button
-                onClick={() => signIn("google", { callbackUrl: "/" })}
+                onClick={signInWithGoogle}
                 className="border-2 w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-full transition-colors"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
