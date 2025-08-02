@@ -16,7 +16,7 @@ type MarkerType = {
 };
 
 interface Place {
-  id: number;
+  placeId: number;
   activity: string;
   city: string;
   country: string;
@@ -24,7 +24,7 @@ interface Place {
 }
 
 interface DayPlan {
-  id: number;
+  dayId: number;
   places: Place[];
   // isSelected: boolean;
   // // onSelect: () => void;
@@ -40,10 +40,10 @@ export default function Index() {
 
   const [dayPlans, setDayPlans] = useState<DayPlan[]>([
     {
-      id: 1,
+      dayId: 1,
       places: [
         {
-          id: 1,
+          placeId: 1,
           activity: "Visit Bali",
           city: "Vali",
           country: "Bali",
@@ -51,7 +51,7 @@ export default function Index() {
             "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg/640px-Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg",
         },
         {
-          id: 2,
+          placeId: 2,
           activity: "Visit Bali",
           city: "Vali",
           country: "Bali",
@@ -61,11 +61,10 @@ export default function Index() {
       ],
     },
     {
-      id: 2,
-      title: "Day 2",
+      dayId: 2,
       places: [
         {
-          id: 1,
+          placeId: 1,
           activity: "Visit Bali",
           city: "Vali",
           country: "Bali",
@@ -73,7 +72,7 @@ export default function Index() {
             "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg/640px-Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg",
         },
         {
-          id: 2,
+          placeId: 2,
           activity: "Visit Bali",
           city: "Vali",
           country: "Bali",
@@ -86,7 +85,7 @@ export default function Index() {
 
   const addDayPlan = () => {
     setDayPlans((prev) => {
-      const newId = prev.length ? prev[prev.length - 1].id + 1 : 1;
+      const newId = prev.length ? prev[prev.length - 1].dayId + 1 : 1;
       return [...prev, { id: newId, title: `Day ${newId}`, markers: [] }];
     });
   };
@@ -94,15 +93,23 @@ export default function Index() {
   const handleDeletePlace = (dayId: number, placeId: number) => {
     setDayPlans((prev) =>
       prev.map((day) =>
-        day.id === dayId
-          ? { ...day, places: day.places.filter((p) => p.id !== placeId) }
+        day.dayId === dayId
+          ? { ...day, places: day.places.filter((p) => p.placeId !== placeId) }
           : day
       )
     );
   };
 
   const handleDeleteDay = (dayId: number) => {
-    setDayPlans((prev) => prev.filter((day) => day.id !== dayId));
+    setDayPlans((prev) => prev.filter((day) => day.dayId !== dayId));
+  };
+
+  const handleReorderPlaces = (dayId: number, newPlaces: Place[]) => {
+    setDayPlans((prev) =>
+      prev.map((day) =>
+        day.dayId === dayId ? { ...day, places: newPlaces } : day
+      )
+    );
   };
 
   // const updateMarkers = (id: number, newMarkers: MarkerType[]) => {
@@ -149,11 +156,12 @@ export default function Index() {
               ))} */}
               {dayPlans.map((dayPlan, index) => (
                 <DayPlanBox
-                  id={dayPlan.id}
+                  dayId={dayPlan.dayId}
                   title={`Day ${index + 1}`}
                   places={dayPlan.places}
                   onDeletePlace={handleDeletePlace}
                   onDeleteDay={handleDeleteDay}
+                  onReorderPlaces={handleReorderPlaces}
                 />
               ))}
               <AddDayButton onClick={addDayPlan} />
