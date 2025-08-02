@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
 
 import Navbar from "@/components/Navbar";
@@ -84,11 +84,22 @@ export default function Index() {
     },
   ]);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const addDayPlan = () => {
     setDayPlans((prev) => {
       const newId = prev.length ? prev[prev.length - 1].dayId + 1 : 1;
-      return [...prev, { id: newId, title: `Day ${newId}`, markers: [] }];
+      return [...prev, { dayId: newId, title: `Day ${newId}`, places: [] }];
     });
+    // Scroll to bottom after a tick
+    setTimeout(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTo({
+          top: scrollRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }, 0);
   };
 
   const handleDeletePlace = (dayId: number, placeId: number) => {
@@ -144,19 +155,15 @@ export default function Index() {
         </div>
         <div className="w-96 flex flex-col h-full overflow-hidden border-l border-border">
           <SearchBar value={search} onChange={setSearch} onSearch={onSearch} />
-          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
+          <div
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent"
+          >
             <div className="p-6 pt-0 space-y-6">
               <SuggestionsBox />
-              {/* {dayPlans.map((dayPlan) => (
-                <DayPlanBox
-                  key={dayPlan.id}
-                  dayTitle={dayPlan.title}
-                  markers={dayPlan.markers}
-                  setMarkers={(markers) => updateMarkers(dayPlan.id, markers)}
-                />
-              ))} */}
               {dayPlans.map((dayPlan, index) => (
                 <DayPlanBox
+                  key={dayPlan.dayId}
                   dayId={dayPlan.dayId}
                   title={`Day ${index + 1}`}
                   places={dayPlan.places}
