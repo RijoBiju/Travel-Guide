@@ -35,6 +35,8 @@ interface DayPlanBoxProps {
   onDeletePlace: (dayId: number, placeId: number) => void;
   onDeleteDay: (dayId: number) => void;
   onReorderPlaces: (dayId: number, places: Place[]) => void;
+  isSelected: boolean;
+  onSelect: () => void;
   // isSelected: boolean;
   // onSelect: () => void;
   // onDelete: () => void;
@@ -91,9 +93,9 @@ const SortablePlace = ({
         </div>
         <button
           onClick={() => onDeletePlace(dayId, place.placeId)}
-          className="hidden md:block cursor-pointer opacity-0 absolute top-4 right-6 h-4 w-4 rounded group-hover:opacity-100 transition-opacity"
+          className="hidden md:block cursor-pointer opacity-0 absolute top-4 right-3 h-4 w-4 rounded group-hover:opacity-100 group-hover:bg-red-400 transition-opacity"
         >
-          <X className="w-4 h-4 p-0.5" />
+          <X className="w-4 h-4" />
         </button>
       </div>
     </div>
@@ -107,10 +109,9 @@ const DayPlanBox = ({
   onDeletePlace,
   onDeleteDay,
   onReorderPlaces,
-}: // isSelected,
-// onSelect,
-// onDelete,
-DayPlanBoxProps) => {
+  isSelected,
+  onSelect,
+}: DayPlanBoxProps) => {
   const [isCollapsible, setIsCollapsible] = useState<boolean>(false);
   const [startDate, setStartDate] = useState<Date | null>(new Date());
 
@@ -127,7 +128,15 @@ DayPlanBoxProps) => {
   };
 
   return (
-    <div key={dayId} className="drop-shadow">
+    <div
+      key={dayId}
+      onClick={onSelect}
+      className={`drop-shadow ${
+        isSelected
+          ? "p-0.5 rounded bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
+          : ""
+      }`}
+    >
       <div className="group flex justify-between items-center gap-2 rounded-t-lg bg-gray-50 p-4 border-b-1 border-gray-300">
         <div className="flex gap-2 items-center justify-center">
           <div className="">
@@ -152,8 +161,11 @@ DayPlanBoxProps) => {
           <CalendarWithIcon startDate={startDate} setStartDate={setStartDate} />
           <Share2 className="w-4 h-4 p-0.5 cursor-pointer" />
         </div>
-        <button onClick={() => onDeleteDay(dayId)} className="flex gap-1">
-          <X className="hidden md:w-4 h-4 p-0.5 cursor-pointer opacity-0 rounded group-hover:block group-hover:opacity-100 transition-opacity" />
+        <button
+          onClick={() => onDeleteDay(dayId)}
+          className="flex gap-1 h-4 w-4 rounded group-hover:bg-red-400"
+        >
+          <X className="hidden md:w-4 h-4 cursor-pointer opacity-0 rounded group-hover:block group-hover:opacity-100 transition-opacity" />
         </button>
       </div>
       <div

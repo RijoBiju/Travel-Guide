@@ -33,6 +33,7 @@ interface DayPlan {
 
 export default function Index() {
   const [search, setSearch] = useState("");
+  const [selectedDayId, setSelectedDayId] = useState<number>();
   const [mapCenter, setMapCenter] = useState<{
     lat: number;
     lon: number;
@@ -162,6 +163,8 @@ export default function Index() {
                   onDeletePlace={handleDeletePlace}
                   onDeleteDay={handleDeleteDay}
                   onReorderPlaces={handleReorderPlaces}
+                  isSelected={selectedDayId === dayPlan.dayId}
+                  onSelect={() => setSelectedDayId(dayPlan.dayId)}
                 />
               ))}
               <AddDayButton onClick={addDayPlan} />
