@@ -1,6 +1,12 @@
 import { useState, useRef } from "react";
 
-const SearchBar = () => {
+type SearchBarProps = {
+  mapCenter: { lat: number; lon: number };
+  setCity: (city: string) => void;
+  setCountry: (country: string) => void;
+};
+
+const SearchBar = ({ mapCenter, setCity, setCountry }: SearchBarProps) => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [value, setValue] = useState<string>("");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -33,6 +39,10 @@ const SearchBar = () => {
   const handleSuggestionClick = (s: any) => {
     const { city, country } = s.properties;
     setValue(city + ", " + country);
+    setCity(city || "");
+    setCountry(country || "");
+    mapCenter({ lat: s.properties.lat, lon: s.properties.lon });
+    setSuggestions([]);
     setSuggestions([]);
   };
 

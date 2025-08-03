@@ -6,6 +6,7 @@ import SearchBar from "@/components/SearchBar";
 import SuggestionsBox from "@/components/SuggestionsBox";
 import DayPlanBox from "@/components/DayPlanBox";
 import AddDayButton from "@/components/AddDayButton";
+import AddPlaceBox from "@/components/AddPlaceBox";
 
 // const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
@@ -20,6 +21,8 @@ interface Place {
   activity: string;
   city: string;
   country: string;
+  lat: number;
+  lon: number;
   imageUrl: string;
 }
 
@@ -34,6 +37,9 @@ interface DayPlan {
 export default function Index() {
   const [search, setSearch] = useState("");
   const [selectedDayId, setSelectedDayId] = useState<number>();
+  const [city, setCity] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
+  const [activity, setActivity] = useState<string>("");
   const [mapCenter, setMapCenter] = useState<{
     lat: number;
     lon: number;
@@ -48,6 +54,8 @@ export default function Index() {
           activity: "Visit Bali",
           city: "Vali",
           country: "Bali",
+          lat: 8.4095,
+          lon: 115.1889,
           imageUrl:
             "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg/640px-Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg",
         },
@@ -56,6 +64,8 @@ export default function Index() {
           activity: "Visit Bali",
           city: "Vali",
           country: "Bali",
+          lat: 8.4095,
+          lon: 115.1889,
           imageUrl:
             "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg/640px-Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg",
         },
@@ -69,6 +79,8 @@ export default function Index() {
           activity: "Visit Bali",
           city: "Vali",
           country: "Bali",
+          lat: 8.4095,
+          lon: 115.1889,
           imageUrl:
             "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg/640px-Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg",
         },
@@ -77,6 +89,8 @@ export default function Index() {
           activity: "Visit Bali",
           city: "Vali",
           country: "Bali",
+          lat: 8.4095,
+          lon: 115.1889,
           imageUrl:
             "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg/640px-Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg",
         },
@@ -124,11 +138,38 @@ export default function Index() {
     );
   };
 
-  // const updateMarkers = (id: number, newMarkers: MarkerType[]) => {
-  //   setDayPlans((prev) =>
-  //     prev.map((dp) => (dp.id === id ? { ...dp, markers: newMarkers } : dp))
-  //   );
-  // };
+  const onCancel = () => {
+    setCity("");
+    setCountry("");
+    setMapCenter(null);
+    setActivity("");
+  };
+
+  const onAddPlace = () => {
+    if (!city || !country || !selectedDayId || !activity) return;
+    setDayPlans((prev) =>
+      prev.map((day) => {
+        if (day.dayId === selectedDayId) {
+          const nextPlaceId = day.places.length
+            ? day.places[day.places.length - 1].placeId + 1
+            : 1;
+          const newPlace = {
+            placeId: nextPlaceId,
+            activity: activity,
+            city,
+            country,
+            lat: mapCenter?.lat || null,
+            lon: mapCenter?.lon || null,
+            imageUrl: "",
+          };
+          return { ...day, places: [...day.places, newPlace] };
+        }
+        return day;
+      })
+    );
+    setCity("");
+    setCountry("");
+  };
 
   // const combinedMarkers = dayPlans.flatMap((dp) => dp.markers);
 
@@ -154,12 +195,26 @@ export default function Index() {
           {/* <Map markers={combinedMarkers} center={mapCenter} /> */}
         </div>
         <div className="w-96 flex flex-col h-full overflow-hidden border-l border-border">
-          <SearchBar value={search} onChange={setSearch} onSearch={onSearch} />
+          <SearchBar
+            mapCenter={setMapCenter}
+            setCity={setCity}
+            setCountry={setCountry}
+          />
           <div
             ref={scrollRef}
             className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent"
           >
             <div className="p-6 pt-0 space-y-6">
+              {city && country && (
+                <AddPlaceBox
+                  city={city}
+                  country={country}
+                  selectedDayId={selectedDayId}
+                  setActivity={setActivity}
+                  onCancel={() => onCancel()}
+                  onAddPlace={onAddPlace}
+                />
+              )}
               <SuggestionsBox />
               {dayPlans.map((dayPlan, index) => (
                 <DayPlanBox

@@ -64,7 +64,7 @@ const SortablePlace = ({
   };
 
   return (
-    <div key={place.placeId} style={style} className="group">
+    <div key={place.placeId} style={style} className="group ">
       <div className="relative group flex flex-row gap-3 p-5 bg-gray-50 w-full">
         <div
           ref={setNodeRef}
