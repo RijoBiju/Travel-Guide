@@ -91,7 +91,7 @@ export default function Index() {
       const newId = prev.length ? prev[prev.length - 1].dayId + 1 : 1;
       return [...prev, { dayId: newId, title: `Day ${newId}`, places: [] }];
     });
-    // Scroll to bottom after a tick
+
     setTimeout(() => {
       if (scrollRef.current) {
         scrollRef.current.scrollTo({
