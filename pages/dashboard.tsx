@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 
 import Navbar from "@/components/Navbar";
@@ -8,7 +8,7 @@ import DayPlanBox from "@/components/DayPlanBox";
 import AddDayButton from "@/components/AddDayButton";
 import AddPlaceBox from "@/components/AddPlaceBox";
 
-// const Map = dynamic(() => import("@/components/Map"), { ssr: false });
+const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 type MarkerType = {
   lat: number;
@@ -40,6 +40,7 @@ export default function Index() {
   const [city, setCity] = useState<string>("");
   const [country, setCountry] = useState<string>("");
   const [activity, setActivity] = useState<string>("");
+  const [dayMarkers, setDayMarkers] = useState<Place[]>([]);
   const [mapCenter, setMapCenter] = useState<{
     lat: number;
     lon: number;
@@ -145,6 +146,23 @@ export default function Index() {
     setActivity("");
   };
 
+  useEffect(() => {
+    if (selectedDayId) {
+      const selectedDay = dayPlans.find((day) => day.dayId === selectedDayId);
+      if (selectedDay && selectedDay.places.length > 0) {
+        setDayMarkers(selectedDay.places);
+      } else {
+        setDayMarkers([]);
+      }
+    }
+  }, [dayPlans, selectedDayId]);
+
+  useEffect(() => {
+    if (activity) {
+      onAddPlace();
+    }
+  }, [activity]);
+
   const onAddPlace = () => {
     if (!city || !country || !selectedDayId || !activity) return;
     setDayPlans((prev) =>
@@ -171,19 +189,13 @@ export default function Index() {
     setCountry("");
   };
 
-  // const combinedMarkers = dayPlans.flatMap((dp) => dp.markers);
-
-  const onSearch = async () => {
-    if (!search) return;
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-        search
-      )}`
-    );
-    const data = await res.json();
-    if (data && data[0]) {
-      const { lat, lon } = data[0];
-      setMapCenter({ lat: +lat, lon: +lon });
+  const onDaySelect = (dayId: number) => {
+    console.log("hi");
+    setSelectedDayId(dayId);
+    const selectedDay = dayPlans.find((day) => day.dayId === dayId);
+    if (selectedDay && selectedDay.places.length > 0) {
+      const places = selectedDay.places;
+      setDayMarkers(places);
     }
   };
 
@@ -192,7 +204,7 @@ export default function Index() {
       <Navbar />
       <div className="flex h-[calc(100vh-4rem)]">
         <div className="flex-[3] relative">
-          {/* <Map markers={combinedMarkers} center={mapCenter} /> */}
+          <Map mapCenter={mapCenter} markers={dayMarkers} />
         </div>
         <div className="w-96 flex flex-col h-full overflow-hidden border-l border-border">
           <SearchBar
@@ -226,7 +238,7 @@ export default function Index() {
                   onDeleteDay={handleDeleteDay}
                   onReorderPlaces={handleReorderPlaces}
                   isSelected={selectedDayId === dayPlan.dayId}
-                  onSelect={() => setSelectedDayId(dayPlan.dayId)}
+                  onSelect={() => onDaySelect(dayPlan.dayId)}
                 />
               ))}
               <AddDayButton onClick={addDayPlan} />
