@@ -1,26 +1,38 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { supabaseClient } from "../../lib/supabaseClient";
+import { supabaseClient } from "@/lib/supabaseClient";
+
+type ResponseJSON = { data?: {} | null; error?: string };
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<ResponseJSON>
 ) {
-  if (req.method !== "POST")
-    return res.status(405).json({ error: "Method not allowed" });
-
-  const { email, password } = req.body;
-  if (!email || !password)
-    return res.status(400).json({ error: "Email and password required" });
-
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    return res.status(401).json({ error: error.message });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Invalid HTTP method" });
   }
 
-  // Optionally: send session or user info
-  return res.status(200).json({ user: data.user });
+  const { email } = req.body;
+
+  if (!email || typeof email !== "string") {
+    return res.status(400).json({ error: "Email is required" });
+  }
+
+  try {
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: {
+        // shouldCreateUser: false,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/confirm`,
+      },
+    });
+
+    if (error) throw error;
+
+    return res.status(200).json({ data: {} });
+  } catch (err: any) {
+    console.error("Magic link error:", err);
+    return res
+      .status(500)
+      .json({ error: err.message ?? "An internal error occurred" });
+  }
 }

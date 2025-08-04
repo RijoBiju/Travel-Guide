@@ -6,7 +6,6 @@ export default function ConfirmEmail() {
       <div className="h-screen flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-glass-bg backdrop-blur-sm border-glass-border shadow-2xl">
           <div className="space-y-6">
-            {/* Header */}
             <div className="text-center space-y-4">
               <div className="w-12 h-12 mx-auto bg-accent rounded-full flex items-center justify-center">
                 <LogIn className="w-6 h-6 text-primary" />

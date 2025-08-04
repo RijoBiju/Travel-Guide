@@ -2,7 +2,7 @@
 import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signUpWithGoogle } from "../../lib/signupGoogle";
+import { signUpWithGoogle } from "../../lib/signUpGoogle";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);

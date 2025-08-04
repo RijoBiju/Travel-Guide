@@ -8,6 +8,8 @@ import DayPlanBox from "@/components/DayPlanBox";
 import AddDayButton from "@/components/AddDayButton";
 import AddPlaceBox from "@/components/AddPlaceBox";
 
+import { supabaseClient } from "@/lib/supabaseClient";
+
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 type MarkerType = {
@@ -37,6 +39,7 @@ interface DayPlan {
 export default function Index() {
   const [search, setSearch] = useState("");
   const [selectedDayId, setSelectedDayId] = useState<number>();
+  const [userId, setUserId] = useState<string>("");
   const [city, setCity] = useState<string>("");
   const [country, setCountry] = useState<string>("");
   const [activity, setActivity] = useState<string>("");
@@ -46,58 +49,20 @@ export default function Index() {
     lon: number;
   } | null>(null);
 
-  const [dayPlans, setDayPlans] = useState<DayPlan[]>([
-    {
-      dayId: 1,
-      places: [
-        {
-          placeId: 1,
-          activity: "Visit Bali",
-          city: "Vali",
-          country: "Bali",
-          lat: 8.4095,
-          lon: 115.1889,
-          imageUrl:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg/640px-Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg",
-        },
-        {
-          placeId: 2,
-          activity: "Visit Bali",
-          city: "Vali",
-          country: "Bali",
-          lat: 8.4095,
-          lon: 115.1889,
-          imageUrl:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg/640px-Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg",
-        },
-      ],
-    },
-    {
-      dayId: 2,
-      places: [
-        {
-          placeId: 1,
-          activity: "Visit Bali",
-          city: "Vali",
-          country: "Bali",
-          lat: 8.4095,
-          lon: 115.1889,
-          imageUrl:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg/640px-Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg",
-        },
-        {
-          placeId: 2,
-          activity: "Visit Bali",
-          city: "Vali",
-          country: "Bali",
-          lat: 8.4095,
-          lon: 115.1889,
-          imageUrl:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg/640px-Bali%2C_Extinct_caldera_slopes%2C_Forest%2C_East_Bali%2C_Indonesia.jpg",
-        },
-      ],
-    },
-  ]);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabaseClient.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const [dayPlans, setDayPlans] = useState<DayPlan[]>([]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 

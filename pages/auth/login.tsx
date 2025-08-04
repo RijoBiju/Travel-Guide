@@ -1,34 +1,29 @@
 "use client";
-import { LogIn, Eye, EyeOff } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { useState } from "react";
 import { signInWithGoogle } from "../../lib/signInGoogle";
 
 const SignInForm = () => {
-  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   // const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
 
     const res = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email }),
     });
 
-    const data = await res.json();
+    const json = await res.json();
 
     if (!res.ok) {
-      // Handle login error
-      console.error(data.error);
-      // setError(data.error); // if you want to show error in UI
+      console.error(json.error);
     } else {
-      // Login successful
-      window.location.href = "/dashboard"; // or wherever you want to redirect
+      window.location.href = "/auth/confirm-email";
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
@@ -42,13 +37,8 @@ const SignInForm = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-semibold text-foreground">
-                  Sign in with email
+                  Get Started
                 </h1>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Make a new doc to bring your words, data,
-                  <br />
-                  and teams together. For free
-                </p>
               </div>
             </div>
 
@@ -82,52 +72,6 @@ const SignInForm = () => {
                       </svg>
                     </div>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="sr-only">Password</div>
-                  <div className="relative">
-                    <input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 h-12 bg-input border-border border-1 rounded w-full border-gray-300 bg-gray-50"
-                    />
-                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                      <svg
-                        className="w-5 h-5 text-muted-foreground"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                        />
-                      </svg>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-5 h-5" />
-                      ) : (
-                        <Eye className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <button className="text-sm text-muted-foreground hover:text-foreground">
-                    Forgot password?
-                  </button>
                 </div>
 
                 <button className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium bg-black text-white rounded-xl">
