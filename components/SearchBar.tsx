@@ -7,7 +7,7 @@ type SearchBarProps = {
 };
 
 const SearchBar = ({ mapCenter, setCity, setCountry }: SearchBarProps) => {
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [value, setValue] = useState<string>("");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -36,7 +36,7 @@ const SearchBar = ({ mapCenter, setCity, setCountry }: SearchBarProps) => {
     }
   };
 
-  const handleSuggestionClick = (s: any) => {
+  const handleSuggestionClick = (s) => {
     const { city, country } = s.properties;
     setValue(city + ", " + country);
     setCity(city || "");

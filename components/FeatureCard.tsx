@@ -19,8 +19,8 @@ async function fetchPlaces(query: string): Promise<string[]> {
       { signal }
     );
     const data = await res.json();
-    return data.features.map((f: any) => f.properties.name).filter(Boolean);
-  } catch (err: any) {
+    return data.features.map((f) => f.properties.name).filter(Boolean);
+  } catch (err) {
     if (err.name === "AbortError") {
       console.log("Previous fetch aborted");
     } else {
@@ -30,13 +30,10 @@ async function fetchPlaces(query: string): Promise<string[]> {
   }
 }
 
-function createCancelableDebounce<T extends any[]>(
-  func: (...args: T) => void,
-  delay: number
-) {
+function createCancelableDebounce(func: (...args) => void, delay: number) {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-  const debounced = (...args: T) => {
+  const debounced = (...args) => {
     if (timeoutId) clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func(...args), delay);
   };
@@ -78,8 +75,8 @@ const FeatureSearch: React.FC<FeatureSearchProps> = ({ onSearch }) => {
 
   const handleSuggestionClick = (s: string) => {
     setShowSuggestions(false);
-    debouncedSearch.cancel(); // cancel scheduled fetch
-    activeController?.abort(); // cancel any ongoing fetch
+    debouncedSearch.cancel();
+    activeController?.abort();
     setQuery(s);
     onSearch?.(s);
   };

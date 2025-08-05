@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { GripVertical, ChevronDown, ChevronUp, Share2, X } from "lucide-react";
 import Image from "next/image";
 import CalendarWithIcon from "./Calendar";
@@ -14,7 +14,6 @@ import {
 import {
   arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -37,9 +36,6 @@ interface DayPlanBoxProps {
   onReorderPlaces: (dayId: number, places: Place[]) => void;
   isSelected: boolean;
   onSelect: () => void;
-  // isSelected: boolean;
-  // onSelect: () => void;
-  // onDelete: () => void;
 }
 
 const SortablePlace = ({
@@ -117,7 +113,7 @@ const DayPlanBox = ({
 
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event) => {
     const { active, over } = event;
     if (active.id !== over.id) {
       const oldIndex = places.findIndex((place) => place.placeId === active.id);

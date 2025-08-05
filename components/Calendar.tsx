@@ -12,7 +12,7 @@ const CalendarWithIcon = ({
   startDate,
   setStartDate,
 }: CalendarWithIconProps) => {
-  const CustomInput = forwardRef<HTMLButtonElement, any>(({ onClick }, ref) => (
+  const CustomInput = forwardRef<HTMLButtonElement>(({ onClick }, ref) => (
     <button
       onClick={onClick}
       ref={ref}

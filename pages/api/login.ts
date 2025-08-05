@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabaseClient } from "@/lib/supabaseClient";
 
-type ResponseJSON = { data?: {} | null; error?: string };
+type ResponseJSON = { data?: null; error? };
 
 export default async function handler(
   req: NextApiRequest,
@@ -29,7 +29,7 @@ export default async function handler(
     if (error) throw error;
 
     return res.status(200).json({ data: {} });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Magic link error:", err);
     return res
       .status(500)

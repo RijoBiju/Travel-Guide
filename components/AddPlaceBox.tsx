@@ -15,7 +15,6 @@ const AddPlaceBox = ({
   selectedDayId,
   setActivity,
   onCancel,
-  onAddPlace,
 }: AddPlaceBoxProps) => {
   const [activity, setActivityState] = useState("");
 
