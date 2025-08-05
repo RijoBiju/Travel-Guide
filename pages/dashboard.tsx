@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 
 import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
@@ -30,39 +31,53 @@ interface Place {
 
 interface DayPlan {
   dayId: number;
+  title: string;
   places: Place[];
-  // isSelected: boolean;
-  // // onSelect: () => void;
-  // // onDelete: () => void;
 }
 
 export default function Index() {
   const [search, setSearch] = useState("");
   const [selectedDayId, setSelectedDayId] = useState<number>();
   const [userId, setUserId] = useState<string>("");
+  const [tripTitle, setTripTitle] = useState<string>("");
   const [city, setCity] = useState<string>("");
   const [country, setCountry] = useState<string>("");
   const [activity, setActivity] = useState<string>("");
   const [dayMarkers, setDayMarkers] = useState<Place[]>([]);
+  const [dayPlans, setDayPlans] = useState<DayPlan[]>([]);
   const [mapCenter, setMapCenter] = useState<{
     lat: number;
     lon: number;
   } | null>(null);
 
+  const router = useRouter();
+
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchTripDetails = async () => {
       const {
         data: { user },
       } = await supabaseClient.auth.getUser();
-      if (user) {
-        setUserId(user.id);
+      if (!user) return;
+
+      const tripId = router.query.tripId;
+      setTripTitle(router.query.tripTitle);
+      if (!tripId) return;
+
+      const { data, error } = await supabaseClient
+        .from("trips")
+        .select("day_plans")
+        .eq("user_id", user.id)
+        .eq("id", tripId);
+
+      if (error) {
+        console.error("Error fetching day plans:", error);
+      } else {
+        setDayPlans(data?.[0]?.day_plans ?? []);
       }
     };
 
-    fetchUser();
+    fetchTripDetails();
   }, []);
-
-  const [dayPlans, setDayPlans] = useState<DayPlan[]>([]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -164,9 +179,38 @@ export default function Index() {
     }
   };
 
+  const onTripSave = async (tripTitle: string) => {
+    if (!tripTitle || !dayPlans.length) return;
+
+    try {
+      const response = await fetch("/api/addTrip", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          trip_title: tripTitle,
+          day_plans: dayPlans,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error("Failed to save trip:", result.error);
+        return;
+      }
+
+      console.log("Trip saved:", result.data);
+    } catch (error) {
+      console.error("Error saving trip:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      <Navbar onTripSave={onTripSave} saveButton={true} tripTitle={tripTitle} />
       <div className="flex h-[calc(100vh-4rem)]">
         <div className="flex-[3] relative">
           <Map mapCenter={mapCenter} markers={dayMarkers} />
