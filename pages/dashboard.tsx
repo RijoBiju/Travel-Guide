@@ -13,12 +13,6 @@ import { supabaseClient } from "@/lib/supabaseClient";
 
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
-type MarkerType = {
-  lat: number;
-  lon: number;
-  name: string;
-};
-
 interface Place {
   placeId: number;
   activity: string;
@@ -36,9 +30,7 @@ interface DayPlan {
 }
 
 export default function Index() {
-  const [search, setSearch] = useState("");
   const [selectedDayId, setSelectedDayId] = useState<number>();
-  const [userId, setUserId] = useState<string>("");
   const [tripTitle, setTripTitle] = useState<string>("");
   const [city, setCity] = useState<string>("");
   const [country, setCountry] = useState<string>("");
