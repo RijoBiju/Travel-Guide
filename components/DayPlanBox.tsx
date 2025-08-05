@@ -166,8 +166,8 @@ const DayPlanBox = ({
         </button>
       </div>
       <div
-        className={`transition-all duration-300 overflow-y-auto rounded-b-lg ${
-          isCollapsible ? "max-h-[210px]" : "max-h-0"
+        className={`overflow-hidden transition-all duration-300 rounded-b-lg ${
+          isCollapsible ? "max-h-[1000px]" : "max-h-0"
         }`}
       >
         <DndContext

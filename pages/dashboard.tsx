@@ -181,17 +181,28 @@ export default function Index() {
   const onTripSave = async (tripTitle: string) => {
     if (!tripTitle || !dayPlans.length) return;
 
+    const tripId = router.query.tripId;
+
+    const endpoint = tripId ? "/api/updateTrip" : "/api/addTrip";
+    const payload = tripId
+      ? {
+          trip_id: tripId,
+          trip_title: tripTitle,
+          day_plans: dayPlans,
+        }
+      : {
+          user_id: userId,
+          trip_title: tripTitle,
+          day_plans: dayPlans,
+        };
+
     try {
-      const response = await fetch("/api/addTrip", {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          user_id: userId,
-          trip_title: tripTitle,
-          day_plans: dayPlans,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();

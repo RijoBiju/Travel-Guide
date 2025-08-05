@@ -36,7 +36,7 @@ const SuggestionsBox = () => {
         <h3 className="text-base font-semibold text-foreground">Suggestions</h3>
       </div>
 
-      <div className="h-64 overflow-y-auto p-4 space-y-3 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
+      <div className="p-4 scrollbar-thin">
         {suggestions.map((suggestion) => (
           <div
             key={suggestion.id}
