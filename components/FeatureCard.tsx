@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import SearchIcon from "../public/search-icon.png";
+import Image from "next/image";
 
 type FeatureSearchProps = {
   onSearch?: (query: string) => void;
@@ -101,7 +102,7 @@ const FeatureSearch: React.FC<FeatureSearchProps> = ({ onSearch }) => {
           onClick={handleSearchClick}
           className="absolute right-0 top-0 bottom-0 px-4 py-2 bg-primary text-white rounded-full flex items-center justify-center"
         >
-          <img src={SearchIcon} alt="Search" className="h-5 w-5" />
+          <Image src={SearchIcon} alt="Search" className="h-5 w-5" />
         </button>
       </div>
       {showSuggestions && query.length > 0 && (

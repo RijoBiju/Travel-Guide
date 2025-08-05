@@ -49,7 +49,8 @@ const SortablePlace = ({
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: place.placeId });
-  const style = {
+
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     position: "relative",

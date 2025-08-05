@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabaseClient } from "@/lib/supabaseClient";
 
-type ResponseJSON = { data?: null; error? };
+type ResponseJSON = { data?: object | null; error?: string };
 
 export default async function handler(
   req: NextApiRequest,

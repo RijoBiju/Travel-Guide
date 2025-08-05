@@ -32,6 +32,7 @@ interface DayPlan {
 export default function Index() {
   const [selectedDayId, setSelectedDayId] = useState<number>();
   const [tripTitle, setTripTitle] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
   const [city, setCity] = useState<string>("");
   const [country, setCountry] = useState<string>("");
   const [activity, setActivity] = useState<string>("");
@@ -51,8 +52,14 @@ export default function Index() {
       } = await supabaseClient.auth.getUser();
       if (!user) return;
 
+      setUserId(user.id);
+
       const tripId = router.query.tripId;
-      setTripTitle(router.query.tripTitle);
+      const tripTitle = router.query.tripTitle;
+      if (typeof tripTitle === "string") {
+        setTripTitle(tripTitle);
+      }
+
       if (!tripId) return;
 
       const { data, error } = await supabaseClient
@@ -209,10 +216,11 @@ export default function Index() {
         </div>
         <div className="w-96 flex flex-col h-full overflow-hidden border-l border-border">
           <SearchBar
-            mapCenter={setMapCenter}
+            setMapCenter={(coords) => setMapCenter(coords)}
             setCity={setCity}
             setCountry={setCountry}
           />
+
           <div
             ref={scrollRef}
             className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent"

@@ -3,7 +3,17 @@ import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import { useEffect } from "react";
 
-type MapProps = { mapCenter?: { lat: number; lon: number }; markers? };
+type MarkerType = {
+  lat: number;
+  lon: number;
+  placeId?: string | number;
+  name?: string;
+};
+
+type MapProps = {
+  mapCenter?: { lat: number; lon: number };
+  markers?: MarkerType[];
+};
 
 function FlyToLocation({
   mapCenter,
@@ -23,7 +33,7 @@ function FlyToLocation({
   return null;
 }
 
-function FitBoundsToMarkers({ markers }: { markers }) {
+function FitBoundsToMarkers({ markers = [] }: { markers: MarkerType[] }) {
   const map = useMap();
   useEffect(() => {
     if (markers.length > 1) {
@@ -44,7 +54,7 @@ const Map = ({ mapCenter, markers = [] }: MapProps) => {
   return (
     <div className="w-full h-full">
       <MapContainer
-        center={[20, 0]}
+        center={[20, 0] as [number, number]}
         zoom={2}
         scrollWheelZoom={true}
         className="w-full h-full"

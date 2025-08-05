@@ -5,13 +5,7 @@ import { useRouter } from "next/router";
 
 export default function Trips() {
   const [userDetails, setUserDetails] = useState<
-    | [
-        {
-          id: string;
-          trip_title: string;
-        }
-      ]
-    | null
+    { id: string; trip_title: string }[]
   >([]);
 
   const router = useRouter();
