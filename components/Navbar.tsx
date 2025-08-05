@@ -12,7 +12,7 @@ interface NavbarProps {
 const Navbar = ({ onTripSave, saveButton, tripTitle }: NavbarProps) => {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState("Trip Plan Name");
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {
     console.log("hi");
@@ -99,19 +99,28 @@ const Navbar = ({ onTripSave, saveButton, tripTitle }: NavbarProps) => {
         createPortal(
           <div className="absolute top-14 right-4 bg-white border border-gray-300 rounded-lg shadow-lg z-999 lg:hidden ">
             <button
-              onClick={() => router.push(`/dashboard`)}
+              onClick={() => {
+                toggleMenu();
+                router.push(`/dashboard`);
+              }}
               className="block px-6 py-2 whitespace-nowrap text-black"
             >
               Home
             </button>
             <button
-              onClick={() => router.push(`/trips`)}
+              onClick={() => {
+                toggleMenu();
+                router.push(`/trips`);
+              }}
               className="block px-6 py-2 whitespace-nowrap text-black"
             >
               Trips
             </button>
             <button
-              onClick={() => onTripSave(title)}
+              onClick={() => {
+                toggleMenu();
+                onTripSave(title);
+              }}
               className="block px-6 py-2 whitespace-nowrap text-black"
             >
               Save

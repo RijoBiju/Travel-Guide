@@ -214,7 +214,7 @@ export default function Index() {
         <div className="flex-[3] relative z-50">
           <Map mapCenter={mapCenter} markers={dayMarkers} />
         </div>
-        <div className="w-96 flex flex-col h-full overflow-hidden border-l border-border">
+        <div className="w-full flex flex-col h-full overflow-hidden border-l border-border">
           <SearchBar
             setMapCenter={(coords) => setMapCenter(coords)}
             setCity={setCity}
@@ -225,7 +225,7 @@ export default function Index() {
             ref={scrollRef}
             className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent"
           >
-            <div className="p-6 pt-0 space-y-6">
+            <div className="p-6 pt-0 space-y-6 w-full">
               {city && country && (
                 <AddPlaceBox
                   city={city}
