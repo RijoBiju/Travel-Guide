@@ -90,7 +90,7 @@ const SortablePlace = ({
         </div>
         <button
           onClick={() => onDeletePlace(dayId, place.placeId)}
-          className="hidden md:block cursor-pointer opacity-0 absolute top-4 right-3 h-4 w-4 rounded group-hover:opacity-100 group-hover:bg-red-400 transition-opacity"
+          className="opacity-100 bg-red-400 md:block cursor-pointer md:opacity-0 absolute top-4 right-3 h-4 w-4 rounded group-hover:opacity-100 group-hover:bg-red-400 transition-opacity"
         >
           <X className="w-4 h-4" />
         </button>
@@ -162,7 +162,7 @@ const DayPlanBox = ({
           onClick={() => onDeleteDay(dayId)}
           className="flex gap-1 h-4 w-4 rounded group-hover:bg-red-400"
         >
-          <X className="hidden md:w-4 h-4 cursor-pointer opacity-0 rounded group-hover:block group-hover:opacity-100 transition-opacity" />
+          <X className="opacity-100 bg-red-400 md:w-4 h-4 cursor-pointer md:opacity-0 rounded group-hover:block group-hover:opacity-100 transition-opacity" />
         </button>
       </div>
       <div

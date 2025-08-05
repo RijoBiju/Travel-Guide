@@ -208,10 +208,10 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-visible">
       <Navbar onTripSave={onTripSave} saveButton={true} tripTitle={tripTitle} />
-      <div className="flex h-[calc(100vh-4rem)]">
-        <div className="flex-[3] relative">
+      <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)]">
+        <div className="flex-[3] relative z-50">
           <Map mapCenter={mapCenter} markers={dayMarkers} />
         </div>
         <div className="w-96 flex flex-col h-full overflow-hidden border-l border-border">

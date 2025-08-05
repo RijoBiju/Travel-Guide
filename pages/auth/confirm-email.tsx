@@ -2,7 +2,7 @@ import { LogIn } from "lucide-react";
 
 export default function ConfirmEmail() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-4">
       <div className="h-screen flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-glass-bg backdrop-blur-sm border-glass-border shadow-2xl">
           <div className="space-y-6">
