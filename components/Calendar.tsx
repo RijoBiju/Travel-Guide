@@ -33,9 +33,9 @@ const CalendarWithIcon = ({
   return (
     <DatePicker
       selected={startDate}
-      onChange={(date) => setStartDate(date)}
+      onChange={(date: Date | null) => setStartDate(date)}
       customInput={<CustomInput />}
-      minDate={startDate}
+      minDate={startDate || undefined}
       dateFormat="MMMM d, yyyy"
       popperPlacement="bottom"
     />
