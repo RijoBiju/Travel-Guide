@@ -1,25 +1,23 @@
 import Hero from "@/components/Hero";
-import FeatureSearch from "@/components/FeatureCard";
-import AuthenticationButtons from "@/components/AuthenticationButtons";
+import { useRouter } from "next/router";
 
 const LandingPage = () => {
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      <AuthenticationButtons></AuthenticationButtons>
-      {/* Main content */}
       <div className="relative z-10 container mx-auto px-6 py-12">
-        <div className="max-w-6xl mx-auto">
-          {/* Hero section */}
+        <div className="max-w-6xl mx-auto flex flex-col items-center justify-center">
           <div className="mb-20">
             <Hero />
           </div>
 
-          {/* Feature cards - centered */}
-          <div className="relative max-w-xl mx-auto">
-            <FeatureSearch></FeatureSearch>
+          <div
+            onClick={() => router.push(`/auth/login`)}
+            className="flex items-center justify-center bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 rounded w-50 p-6 cursor-pointer"
+          >
+            Get Started
           </div>
 
-          {/* Bottom decoration */}
           <div className="mt-20 text-center">
             <div className="inline-flex items-center space-x-2 text-muted-foreground">
               <div className="w-8 h-px bg-gradient-primary"></div>

@@ -49,7 +49,10 @@ const Navbar = ({ onTripSave, saveButton, tripTitle }: NavbarProps) => {
         <h1 className="text-3xl font-bold">Trip Dash</h1>
       )}
       <div className="flex items-center gap-8">
-        <button className="relative px-4 py-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 font-medium after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-gradient-to-r after:from-blue-500 after:via-purple-500 after:to-pink-500">
+        <button
+          onClick={() => router.push(`/dashboard`)}
+          className="relative cursor-pointer px-4 py-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 font-medium after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-gradient-to-r after:from-blue-500 after:via-purple-500 after:to-pink-500"
+        >
           Home
         </button>
         <button
