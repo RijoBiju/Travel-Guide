@@ -231,7 +231,6 @@ export default function Index() {
             setCity={setCity}
             setCountry={setCountry}
           />
-
           <div
             ref={scrollRef}
             className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent"
@@ -247,7 +246,7 @@ export default function Index() {
                   onAddPlace={onAddPlace}
                 />
               )}
-              <SuggestionsBox />
+              <SuggestionsBox city={city} />
               {dayPlans.map((dayPlan, index) => (
                 <DayPlanBox
                   key={dayPlan.dayId}

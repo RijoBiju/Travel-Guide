@@ -53,7 +53,7 @@ const Navbar = ({ onTripSave, saveButton, tripTitle }: NavbarProps) => {
           )}
         </div>
       ) : (
-        <h1 className="text-3xl font-bold">Trip Dash</h1>
+        <h1 className="text-3xl font-bold">Your Trips</h1>
       )}
       <div className="hidden md:flex items-center gap-8">
         <button
