@@ -56,9 +56,13 @@ const SuggestionsBox = ({ city }: SuggestionsBoxProps) => {
   const [events, setEvents] = useState<Events[]>([]);
   const [areasToStay, setAreasToStay] = useState<AreasToStay[]>([]);
   const [travelTips, setTravelTips] = useState<TravelTips>({ tips: [] });
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+  const [load, setLoad] = useState<boolean>(false);
 
   useEffect(() => {
     const getCityDetails = async (city: string) => {
+      setShowSuggestions(false);
+      setLoad(true);
       if (city === "") return;
       const res = await fetch("/api/gemini", {
         method: "POST",
@@ -96,6 +100,8 @@ const SuggestionsBox = ({ city }: SuggestionsBoxProps) => {
       setEvents(parsed.events || []);
       setAreasToStay(parsed.areas_to_stay || []);
       setTravelTips({ tips: parsed.travel_tips || [] });
+      setLoad(false);
+      setShowSuggestions(true);
     };
     if (city) {
       getCityDetails(city);
@@ -103,15 +109,23 @@ const SuggestionsBox = ({ city }: SuggestionsBoxProps) => {
   }, [city]);
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl bg-surface w-full">
-      {city === "" ? (
-        <div className="flex items-center justify-center p-4">
-          <h3 className="text-base font-semibold text-foreground">
-            Please choose place to visit to see suggestions
-          </h3>
-        </div>
+    <div className="flex flex-col rounded-xl bg-surface w-full">
+      {!showSuggestions ? (
+        load ? (
+          <div className="flex items-center justify-center p-4 gap-4">
+            <h3 className="text-base font-semibold text-foreground">
+              Loading suggestions...
+            </h3>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center p-4 gap-4">
+            <h3 className="text-base font-semibold text-foreground">
+              Please choose a place to visit to see suggestions
+            </h3>
+          </div>
+        )
       ) : (
-        <div>
+        <div className="flex flex-col gap-2">
           <div className="flex flex-col items-center w-full drop-shadow bg-gray-50">
             <h3 className="flex items-center gap-3 w-full p-4 text-base font-semibold text-foreground h-full bg-gray-50">
               Suggested Attractions

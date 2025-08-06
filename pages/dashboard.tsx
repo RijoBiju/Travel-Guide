@@ -164,8 +164,6 @@ export default function Index() {
         return day;
       })
     );
-    setCity("");
-    setCountry("");
   };
 
   const onDaySelect = (dayId: number) => {
